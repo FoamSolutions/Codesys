@@ -1,5 +1,5 @@
 FUNCTION_BLOCK FB_MotionFinal2
-(*
+
 (*
     ===========================================================================
      FB_MotionFinal2_V4_5_ECAT  |  Build-ID: motion-final-450  (2025-11-03)
@@ -58,7 +58,6 @@ FUNCTION_BLOCK FB_MotionFinal2
     ===========================================================================
 *)
 
-*)
 
 VAR CONSTANT
     REV_MAJOR  : UINT := 4;
@@ -1022,5 +1021,6 @@ END_CASE;
 	gAxes.StateID := stateId;
 	gAxes.StateText := stateText;
 	gAxes.HysteresisSwitchEnabled := allowHysteresisSwitch;
+
 
 
