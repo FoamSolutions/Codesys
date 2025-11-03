@@ -1,16 +1,63 @@
 FUNCTION_BLOCK FB_MotionFinal2
 (*
+(*
     ===========================================================================
-     FB_MotionFinal2_V4_5_ECAT   |  Build-ID: motion-final-450
+     FB_MotionFinal2_V4_5_ECAT  |  Build-ID: motion-final-450  (2025-11-03)
     ===========================================================================
-     Revision History
+     Functional Summary
      --------------------------------------------------------------------------
-     V4.5.0  |  2025-10-27  |  Kenneth Bazzett / ChatGPT (GPT-5)
+     • Implements full dual-axis SoftMotion control for A and B pump servos.
+     • Supports automatic CST↔CSV mode switching for Idle and Run phases.
+     • Handles PID pressure regulation, feed-forward torque control, and
+       hysteresis-driven phase transitions.
+     • Includes bumpless torque slew, torque→velocity mode recovery, and
+       anti-windup PID integration for stable idle pressures.
+
+     Core Functional Sections
      --------------------------------------------------------------------------
-     - Added B-Axis torque-limit fallback logic (SoftMotion Mode A).
-     - No functional changes to A-Axis or Idle/Run hysteresis logic.
-     - Integrated bumpless torque ramp and pressure dwell release.
+     1. **Initialization / Persistent Defaults**
+        - Seeds all PersistentVars (gears, pressures, gains, limits, etc.)
+        - Computes base RPM, displacement, and derived flow/ratio terms.
+        - Powers drives, clamps RPM and override factors, seeds revision info.
+
+     2. **CST-Idle Torque Control (Per Axis)**
+        - Calculates feed-forward torque (Nm) from idle SP & displacement.
+        - Executes independent PID loops with anti-windup and slew limiting.
+        - Converts Nm→PDO INT (0–1000) for JMC CST drives.
+        - Writes real-time torque commands to gAxes PDOs.
+
+     3. **Run Mode (CSV)**
+        - Runs dual-axis pressure-linked velocity control.
+        - PID-driven lead/follow loop for pressure stabilization.
+        - Ratio logic for A-lead/B-lead and master-slave scaling.
+
+     4. **Mode Transition Logic**
+        - Smart auto-toggle between CST (Idle) and CSV (Run).
+        - Safe fallback: zero torque, switch to velocity, then stop.
+        - Torque-mode max-speed constraints managed dynamically.
+
+     5. **High-Level State Machine (V4.5_ECAT)**
+        - States: STOPPED → POWERING → RUNNING → STOP/RESET sequence.
+        - Handles PID convergence (Idle readiness), Run/Idle hysteresis,
+          and RunCmd edge management with pulse timing.
+        - Provides clean recovery from faults and RunCmd release.
+
+     6. **Diagnostics & HMI Integration**
+        - Updates gAxes.StateID, StateText, torque feedbacks, RPM clamps,
+          and RunCmd pulse timing for visualization.
+        - Mirrors real-time motion and pressure feedback to gAxes debug vars.
+
+     --------------------------------------------------------------------------
+     Key Additions Since 4.4.x
+     --------------------------------------------------------------------------
+     • Integrated torque/velocity hand-off with zero-torque staging.
+     • Per-axis torque command PDO mapping (16#1602).
+     • PID-Idle convergence gating Run/Idle hysteresis enable.
+     • Override slew limiter and slip compensation refined.
+     • B-axis torque limit logic merged into unified CST handler.
     ===========================================================================
+*)
+
 *)
 
 VAR CONSTANT
@@ -975,4 +1022,5 @@ END_CASE;
 	gAxes.StateID := stateId;
 	gAxes.StateText := stateText;
 	gAxes.HysteresisSwitchEnabled := allowHysteresisSwitch;
+
 
