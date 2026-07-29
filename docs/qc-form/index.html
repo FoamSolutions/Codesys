@@ -86,6 +86,7 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 </div>
 <div style="margin-top:10px"><label>Waste Reason</label><textarea name="waste_reason">Machine commissioning; test sprays; cleaning lines; relative mode with incorrect ratio.</textarea></div>
 <div style="margin-top:10px"><label>Disposition</label><input name="disposition" value="Disposed of; not recycled / not used."></div>
+<div id="wastephotos" style="margin-top:10px"></div>
 </section>
 
 <section><div class="title">4. Density Samples</div>
@@ -122,9 +123,10 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 </form>
 </main>
 <script>
-const defs=[{w:3,s:305,f:375},{w:4,s:305,f:415},{w:3,s:305,f:410}],photos={p1:[],p2:[],p3:[],before:[],after:[]};
+const defs=[{w:3,s:305,f:375},{w:4,s:305,f:415},{w:3,s:305,f:410}],photos={p1:[],p2:[],p3:[],waste:[],before:[],after:[]};
 function photo(id,title){return `<div class="photo"><h3>${title}</h3><input type="file" accept="image/*" multiple onchange="loadPhotos(this,'${id}')"><div id="${id}gallery" class="gallery"></div><button type="button" class="red" onclick="clearPhotos('${id}')">Remove All Photos</button></div>`}
 samples.innerHTML=defs.map((d,i)=>{let n=i+1;return `<div class="sample"><h2>Sample ${n}</h2><div class="grid3"><div><label>Weight (g)</label><input id="w${n}" name="w${n}" type="number" step=".01" value="${d.w}" oninput="calc()"></div><div><label>Starting Water (mL)</label><input id="s${n}" name="s${n}" type="number" step=".1" value="${d.s}" oninput="calc()"></div><div><label>Finished Water (mL)</label><input id="f${n}" name="f${n}" type="number" step=".1" value="${d.f}" oninput="calc()"></div><div><label>Displaced Volume</label><input id="v${n}" name="v${n}" readonly></div><div><label>Density (lb/ft³)</label><input id="d${n}" name="d${n}" readonly></div><div><label>Result</label><div id="r${n}" class="result"></div></div></div><div class="grid" style="margin-top:10px">${photo('p'+n,'Sample '+n+' Photos')}<div><label>Sample Notes</label><textarea name="sample${n}_notes"></textarea></div></div></div>`}).join('');
+wastephotos.innerHTML=photo('waste','Waste Photos');
 jobphotos.innerHTML=photo('before','Before Photos')+photo('after','After Photos');
 
 function num(id){return parseFloat(document.getElementById(id).value)||0}
@@ -163,7 +165,7 @@ async function exportPDF(){
  for(let i=1;i<=3;i++)kv('Sample '+i,`${v['w'+i]} g · ${v['s'+i]}→${v['f'+i]} mL · ${v['d'+i]} lb/ft³ · ${document.getElementById('r'+i).textContent}`);
  kv('Average / Result',(v.avg||'')+' lb/ft³ · '+overall.textContent);
 
- const groups=[['p1','Sample 1'],['p2','Sample 2'],['p3','Sample 3'],['before','Before'],['after','After']];
+ const groups=[['p1','Sample 1'],['p2','Sample 2'],['p3','Sample 3'],['waste','Waste'],['before','Before'],['after','After']];
  for(const [id,title] of groups){
    if(!photos[id].length)continue;
    doc.addPage();y=16;doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(title+' Photos',12,y);y+=8;doc.setDrawColor(...line);doc.line(12,y,204,y);y+=7;doc.setTextColor(0);
