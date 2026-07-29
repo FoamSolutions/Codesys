@@ -75,7 +75,16 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <div><label>B Pressure</label><input name="b_pressure" value="Not recorded"></div>
 </div></section>
 
-<section><div class="title">3. Production</div>
+<section><div class="title">3. Material Traceability</div>
+<div class="grid">
+<div><label>A-Side Drum Batch / Lot</label><input name="a_batch_lot" placeholder="Enter A-side batch or lot number"></div>
+<div><label>A-Side Keg ID</label><input name="a_keg_id" placeholder="Enter A-side keg ID"></div>
+<div><label>B-Side Drum Batch / Lot</label><input name="b_batch_lot" placeholder="Enter B-side batch or lot number"></div>
+<div><label>B-Side Keg ID</label><input name="b_keg_id" placeholder="Enter B-side keg ID"></div>
+</div>
+</section>
+
+<section><div class="title">4. Production</div>
 <div class="grid3">
 <div><label>Expected BF</label><input id="expected" name="expected" type="number" step=".1" value="50" oninput="calc()"></div>
 <div><label>Installed BF</label><input id="installed" name="installed" type="number" step=".1" value="171" oninput="calc()"></div>
@@ -89,23 +98,23 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <div id="wastephotos" style="margin-top:10px"></div>
 </section>
 
-<section><div class="title">4. Density Samples</div>
+<section><div class="title">5. Density Samples</div>
 <div class="grid"><div><label>Minimum Density</label><input id="min" name="min" type="number" step=".01" value="1.80" oninput="calc()"></div><div><label>Maximum Density</label><input id="max" name="max" type="number" step=".01" value="2.20" oninput="calc()"></div></div>
 <p class="small">Density = grams ÷ displaced mL × 62.42796</p>
 <div id="samples"></div>
 <div class="grid"><div><label>Average Density</label><input id="avg" name="avg" readonly></div><div><label>Overall Result</label><div id="overall" class="result"></div></div></div>
 </section>
 
-<section><div class="title">5. Before & After Photos</div><div class="grid" id="jobphotos"></div><div style="margin-top:10px"><label>Photo Notes</label><textarea name="photo_notes"></textarea></div></section>
+<section><div class="title">6. Before & After Photos</div><div class="grid" id="jobphotos"></div><div style="margin-top:10px"><label>Photo Notes</label><textarea name="photo_notes"></textarea></div></section>
 
-<section><div class="title">6. Visual Inspection</div><div class="checklist">
+<section><div class="title">7. Visual Inspection</div><div class="checklist">
 <label><input type="checkbox" name="cell_structure">Cell structure mostly uniform with some larger voids</label>
 <label><input type="checkbox" name="skin_quality" checked>Skin quality very nice</label>
 <label><input type="checkbox" name="shrinkage" checked>Minor shrink-back observed</label>
 <label><input type="checkbox" name="voids" checked>Some larger voids observed</label>
 </div></section>
 
-<section><div class="title">7. Machine / Process Events</div><div class="checklist">
+<section><div class="title">8. Machine / Process Events</div><div class="checklist">
 <label><input type="checkbox" checked>Spray gun pulsing observed at approximately 1.0 GPM</label>
 <label><input type="checkbox" checked>Evaluate reduced flow near 0.75 GPM</label>
 <label><input type="checkbox" checked>Line and tank heaters were OFF after restart</label>
@@ -113,13 +122,13 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <label><input type="checkbox" checked>Relative mode used with incorrect ratio</label>
 </div></section>
 
-<section><div class="title">8. Technician Observations</div><textarea name="observations">The spray gun appeared to pulse material. At roughly 1.0 GPM, the nucleation air did not produce a fine, consistent stream. During the first half of the spray, the line and tank heaters were shut off after a restart. During the second trip to the attic, the machine was started momentarily with nucleation/purge air off.</textarea></section>
-<section><div class="title">9. Corrective Actions / Next Test</div><textarea name="actions">1. Test total flow near 0.75 GPM and compare spray pattern and cell structure.
+<section><div class="title">9. Technician Observations</div><textarea name="observations">The spray gun appeared to pulse material. At roughly 1.0 GPM, the nucleation air did not produce a fine, consistent stream. During the first half of the spray, the line and tank heaters were shut off after a restart. During the second trip to the attic, the machine was started momentarily with nucleation/purge air off.</textarea></section>
+<section><div class="title">10. Corrective Actions / Next Test</div><textarea name="actions">1. Test total flow near 0.75 GPM and compare spray pattern and cell structure.
 2. Add heater-enable confirmation and inhibit logic after restart.
 3. Add purge-air ON verification to the pre-spray checklist.
 4. Confirm correct ratio/mode before spraying.
 5. Continue density sampling and correlate results with temperature and flow.</textarea></section>
-<section><div class="title">10. Sign-off</div><div class="grid"><div><label>Technician Signature / Name</label><input name="tech_signature"></div><div><label>Date</label><input name="tech_sign_date" type="date" value="2026-07-28"></div><div><label>Customer / Representative</label><input name="customer_signature"></div><div><label>Date</label><input name="customer_sign_date" type="date"></div></div></section>
+<section><div class="title">11. Sign-off</div><div class="grid"><div><label>Technician Signature / Name</label><input name="tech_signature"></div><div><label>Date</label><input name="tech_sign_date" type="date" value="2026-07-28"></div><div><label>Customer / Representative</label><input name="customer_signature"></div><div><label>Date</label><input name="customer_sign_date" type="date"></div></div></section>
 </form>
 </main>
 <script>
@@ -128,7 +137,6 @@ function photo(id,title){return `<div class="photo"><h3>${title}</h3><input type
 samples.innerHTML=defs.map((d,i)=>{let n=i+1;return `<div class="sample"><h2>Sample ${n}</h2><div class="grid3"><div><label>Weight (g)</label><input id="w${n}" name="w${n}" type="number" step=".01" value="${d.w}" oninput="calc()"></div><div><label>Starting Water (mL)</label><input id="s${n}" name="s${n}" type="number" step=".1" value="${d.s}" oninput="calc()"></div><div><label>Finished Water (mL)</label><input id="f${n}" name="f${n}" type="number" step=".1" value="${d.f}" oninput="calc()"></div><div><label>Displaced Volume</label><input id="v${n}" name="v${n}" readonly></div><div><label>Density (lb/ft³)</label><input id="d${n}" name="d${n}" readonly></div><div><label>Result</label><div id="r${n}" class="result"></div></div></div><div class="grid" style="margin-top:10px">${photo('p'+n,'Sample '+n+' Photos')}<div><label>Sample Notes</label><textarea name="sample${n}_notes"></textarea></div></div></div>`}).join('');
 wastephotos.innerHTML=photo('waste','Waste Photos');
 jobphotos.innerHTML=photo('before','Before Photos')+photo('after','After Photos');
-
 function num(id){return parseFloat(document.getElementById(id).value)||0}
 function calc(){
  let ins=num('installed'),wa=num('waste'),t=ins+wa;
@@ -159,12 +167,13 @@ async function exportPDF(){
  [['Spray Date',v.spray_date],['Job #',v.job_number],['Customer',v.customer],['Technician',v.technician],['Address',v.address],['Foam System',v.foam],['Target / Roof Pitch',(v.target||'')+' / '+(v.roof_pitch||'')],['Spray Time',(v.start_time||'')+' - '+(v.end_time||'')]].forEach(r=>kv(r[0],r[1]));
  sectionTitle('CONDITIONS & MACHINE');
  [['Outside / Attic Temp',(v.outside_temp||'')+' / '+(v.attic_temp||'')+' °F'],['Relative Humidity / Dew Point',(v.rh||'')+'% / '+(v.dew_point||'')+' °F'],['Substrate / Hose Temp',(v.substrate_temp||'')+' / '+(v.hose_temp||'')+' °F'],['A / B Tank Temp',(v.a_tank_temp||'')+' / '+(v.b_tank_temp||'')+' °F'],['RPM / Flow',(v.pump_rpm||'')+' RPM · '+(v.flow_lpm||'')+' L/min · '+(v.flow_gpm||'')+' GPM']].forEach(r=>kv(r[0],r[1]));
+ sectionTitle('MATERIAL TRACEABILITY');
+ [['A-Side Batch / Lot',v.a_batch_lot],['A-Side Keg ID',v.a_keg_id],['B-Side Batch / Lot',v.b_batch_lot],['B-Side Keg ID',v.b_keg_id]].forEach(r=>kv(r[0],r[1]));
  sectionTitle('PRODUCTION');
  [['Expected / Installed / Waste BF',(v.expected||'')+' / '+(v.installed||'')+' / '+(v.waste||'')],['Yield / Waste %',(v.yield||'')+' / '+(v.wastepct||'')],['Waste Reason',v.waste_reason],['Disposition',v.disposition]].forEach(r=>kv(r[0],r[1]));
  sectionTitle('DENSITY TESTING');
  for(let i=1;i<=3;i++)kv('Sample '+i,`${v['w'+i]} g · ${v['s'+i]}→${v['f'+i]} mL · ${v['d'+i]} lb/ft³ · ${document.getElementById('r'+i).textContent}`);
  kv('Average / Result',(v.avg||'')+' lb/ft³ · '+overall.textContent);
-
  const groups=[['p1','Sample 1'],['p2','Sample 2'],['p3','Sample 3'],['waste','Waste'],['before','Before'],['after','After']];
  for(const [id,title] of groups){
    if(!photos[id].length)continue;
