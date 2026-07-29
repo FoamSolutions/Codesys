@@ -57,7 +57,6 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <div style="margin-top:10px"><label>Foam System</label><input name="foam" value="Central Urethane Express Seal 200 - 2 lb Closed Cell"></div>
 <div class="grid" style="margin-top:10px"><div><label>Target</label><input name="target" value="7 in wall top (R-49)"></div><div><label>Roof Pitch</label><input name="roof_pitch" value="10/12"></div></div>
 </section>
-
 <section><div class="title">2. Spray Conditions & Machine Settings</div>
 <div class="grid3">
 <div><label>Outside Temp (°F)</label><input id="outside_temp" name="outside_temp" type="number" value="71" oninput="calc()"></div>
@@ -74,16 +73,14 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <div><label>A Pressure</label><input name="a_pressure" value="Not recorded"></div>
 <div><label>B Pressure</label><input name="b_pressure" value="Not recorded"></div>
 </div></section>
-
 <section><div class="title">3. Material Traceability</div>
 <div class="grid">
-<div><label>A-Side Drum Batch / Lot</label><input name="a_batch_lot" placeholder="Enter A-side batch or lot number"></div>
-<div><label>A-Side Keg ID</label><input name="a_keg_id" placeholder="Enter A-side keg ID"></div>
-<div><label>B-Side Drum Batch / Lot</label><input name="b_batch_lot" placeholder="Enter B-side batch or lot number"></div>
-<div><label>B-Side Keg ID</label><input name="b_keg_id" placeholder="Enter B-side keg ID"></div>
+<div><label>Drum A</label><input name="drum_a" placeholder="Enter Drum A batch / lot"></div>
+<div><label>Drum B</label><input name="drum_b" placeholder="Enter Drum B batch / lot"></div>
+<div><label>Keg A</label><input name="keg_a" placeholder="Enter Keg A ID"></div>
+<div><label>Keg B</label><input name="keg_b" placeholder="Enter Keg B ID"></div>
 </div>
 </section>
-
 <section><div class="title">4. Production</div>
 <div class="grid3">
 <div><label>Expected BF</label><input id="expected" name="expected" type="number" step=".1" value="50" oninput="calc()"></div>
@@ -97,23 +94,19 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <div style="margin-top:10px"><label>Disposition</label><input name="disposition" value="Disposed of; not recycled / not used."></div>
 <div id="wastephotos" style="margin-top:10px"></div>
 </section>
-
 <section><div class="title">5. Density Samples</div>
 <div class="grid"><div><label>Minimum Density</label><input id="min" name="min" type="number" step=".01" value="1.80" oninput="calc()"></div><div><label>Maximum Density</label><input id="max" name="max" type="number" step=".01" value="2.20" oninput="calc()"></div></div>
 <p class="small">Density = grams ÷ displaced mL × 62.42796</p>
 <div id="samples"></div>
 <div class="grid"><div><label>Average Density</label><input id="avg" name="avg" readonly></div><div><label>Overall Result</label><div id="overall" class="result"></div></div></div>
 </section>
-
 <section><div class="title">6. Before & After Photos</div><div class="grid" id="jobphotos"></div><div style="margin-top:10px"><label>Photo Notes</label><textarea name="photo_notes"></textarea></div></section>
-
 <section><div class="title">7. Visual Inspection</div><div class="checklist">
 <label><input type="checkbox" name="cell_structure">Cell structure mostly uniform with some larger voids</label>
 <label><input type="checkbox" name="skin_quality" checked>Skin quality very nice</label>
 <label><input type="checkbox" name="shrinkage" checked>Minor shrink-back observed</label>
 <label><input type="checkbox" name="voids" checked>Some larger voids observed</label>
 </div></section>
-
 <section><div class="title">8. Machine / Process Events</div><div class="checklist">
 <label><input type="checkbox" checked>Spray gun pulsing observed at approximately 1.0 GPM</label>
 <label><input type="checkbox" checked>Evaluate reduced flow near 0.75 GPM</label>
@@ -121,7 +114,6 @@ input[type=date],input[type=time]{max-width:190px}input[readonly]{background:var
 <label><input type="checkbox" checked>Nucleation / purge air was briefly OFF during second startup</label>
 <label><input type="checkbox" checked>Relative mode used with incorrect ratio</label>
 </div></section>
-
 <section><div class="title">9. Technician Observations</div><textarea name="observations">The spray gun appeared to pulse material. At roughly 1.0 GPM, the nucleation air did not produce a fine, consistent stream. During the first half of the spray, the line and tank heaters were shut off after a restart. During the second trip to the attic, the machine was started momentarily with nucleation/purge air off.</textarea></section>
 <section><div class="title">10. Corrective Actions / Next Test</div><textarea name="actions">1. Test total flow near 0.75 GPM and compare spray pattern and cell structure.
 2. Add heater-enable confirmation and inhibit logic after restart.
@@ -138,15 +130,7 @@ samples.innerHTML=defs.map((d,i)=>{let n=i+1;return `<div class="sample"><h2>Sam
 wastephotos.innerHTML=photo('waste','Waste Photos');
 jobphotos.innerHTML=photo('before','Before Photos')+photo('after','After Photos');
 function num(id){return parseFloat(document.getElementById(id).value)||0}
-function calc(){
- let ins=num('installed'),wa=num('waste'),t=ins+wa;
- total.value=t?t.toFixed(1):'';yield.value=t?(ins/t*100).toFixed(2):'';wastepct.value=t?(wa/t*100).toFixed(2):'';
- let tc=(num('outside_temp')-32)*5/9,rh=Math.max(.1,Math.min(100,num('rh'))),a=17.625,b=243.04,g=Math.log(rh/100)+(a*tc)/(b+tc),dp=(b*g)/(a-g);
- dew_point.value=isFinite(dp)?(dp*9/5+32).toFixed(1):'';
- let mn=num('min'),mx=num('max'),sum=0,c=0;
- for(let i=1;i<=3;i++){let w=num('w'+i),s=num('s'+i),f=num('f'+i),v=f-s,d=v>0?w/v*62.42796:0;document.getElementById('v'+i).value=v>0?v.toFixed(1):'';document.getElementById('d'+i).value=d?d.toFixed(2):'';let r=document.getElementById('r'+i),ok=d&&d>=mn&&d<=mx;r.textContent=d?(ok?'PASS':'FAIL'):'';r.className='result '+(d?(ok?'pass':'fail'):'');if(d){sum+=d;c++}}
- let av=c?sum/c:0;avg.value=av?av.toFixed(2):'';let ok=av&&av>=mn&&av<=mx;overall.textContent=av?(ok?'PASS':'FAIL'):'';overall.className='result '+(av?(ok?'pass':'fail'):'')
-}
+function calc(){let ins=num('installed'),wa=num('waste'),t=ins+wa;total.value=t?t.toFixed(1):'';yield.value=t?(ins/t*100).toFixed(2):'';wastepct.value=t?(wa/t*100).toFixed(2):'';let tc=(num('outside_temp')-32)*5/9,rh=Math.max(.1,Math.min(100,num('rh'))),a=17.625,b=243.04,g=Math.log(rh/100)+(a*tc)/(b+tc),dp=(b*g)/(a-g);dew_point.value=isFinite(dp)?(dp*9/5+32).toFixed(1):'';let mn=num('min'),mx=num('max'),sum=0,c=0;for(let i=1;i<=3;i++){let w=num('w'+i),s=num('s'+i),f=num('f'+i),v=f-s,d=v>0?w/v*62.42796:0;document.getElementById('v'+i).value=v>0?v.toFixed(1):'';document.getElementById('d'+i).value=d?d.toFixed(2):'';let r=document.getElementById('r'+i),ok=d&&d>=mn&&d<=mx;r.textContent=d?(ok?'PASS':'FAIL'):'';r.className='result '+(d?(ok?'pass':'fail'):'');if(d){sum+=d;c++}}let av=c?sum/c:0;avg.value=av?av.toFixed(2):'';let ok=av&&av>=mn&&av<=mx;overall.textContent=av?(ok?'PASS':'FAIL'):'';overall.className='result '+(av?(ok?'pass':'fail'):'')}
 async function compress(file){return new Promise((res,rej)=>{let r=new FileReader();r.onload=e=>{let im=new Image();im.onload=()=>{let m=2000,s=Math.min(1,m/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);res(cv.toDataURL('image/jpeg',.86))};im.onerror=rej;im.src=e.target.result};r.onerror=rej;r.readAsDataURL(file)})}
 async function loadPhotos(input,id){for(const f of Array.from(input.files||[])){try{photos[id].push(await compress(f))}catch(e){alert('Could not load '+f.name)}}render(id);input.value=''}
 function render(id){document.getElementById(id+'gallery').innerHTML=photos[id].map((src,i)=>`<div class="tile"><img src="${src}"><button type="button" onclick="removeOne('${id}',${i})">Remove</button></div>`).join('')}
@@ -156,37 +140,7 @@ function saveForm(){localStorage.setItem('foam_form_text',JSON.stringify(values(
 function clearFields(){if(!confirm('Clear all fields and photos?'))return;localStorage.removeItem('foam_form_text');document.querySelectorAll('#f input:not([type=file]),#f textarea').forEach(x=>{if(x.type==='checkbox')x.checked=false;else x.value=''});Object.keys(photos).forEach(clearPhotos);overall.textContent='';overall.className='result';status.textContent='All fields and photos cleared.';status.style.display='block';setTimeout(()=>status.style.display='none',2200)}
 function addPageIf(doc,y,need=20){if(y+need>265){doc.addPage();return 18}return y}
 function text(doc,t,x,y,w,lh=4.5){const lines=doc.splitTextToSize(String(t||''),w);for(const line of lines){y=addPageIf(doc,y,lh+2);doc.text(line,x,y);y+=lh}return y}
-async function exportPDF(){
- if(!window.jspdf){alert('PDF library is still loading. Try again in a few seconds.');return}
- calc();const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'letter'}),v=values();let y=14;
- const bronze=[138,90,59],dark=[92,56,39],line=[210,190,172];
- function sectionTitle(t){y=addPageIf(doc,y,12);doc.setFillColor(...bronze);doc.roundedRect(12,y-5,192,8,2,2,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(t,16,y);doc.setTextColor(0);y+=8}
- function kv(label,value){y=addPageIf(doc,y,9);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text(label,15,y);doc.setFont('helvetica','normal');y=text(doc,value,58,y,143,4);y+=1.5}
- doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('FOAM SOLUTIONS',12,y);y+=7;doc.setFontSize(13);doc.text('Spray Foam Quality Control Report',12,y);y+=8;doc.setDrawColor(...line);doc.line(12,y,204,y);y+=5;doc.setTextColor(0);
- sectionTitle('JOB SUMMARY');
- [['Spray Date',v.spray_date],['Job #',v.job_number],['Customer',v.customer],['Technician',v.technician],['Address',v.address],['Foam System',v.foam],['Target / Roof Pitch',(v.target||'')+' / '+(v.roof_pitch||'')],['Spray Time',(v.start_time||'')+' - '+(v.end_time||'')]].forEach(r=>kv(r[0],r[1]));
- sectionTitle('CONDITIONS & MACHINE');
- [['Outside / Attic Temp',(v.outside_temp||'')+' / '+(v.attic_temp||'')+' °F'],['Relative Humidity / Dew Point',(v.rh||'')+'% / '+(v.dew_point||'')+' °F'],['Substrate / Hose Temp',(v.substrate_temp||'')+' / '+(v.hose_temp||'')+' °F'],['A / B Tank Temp',(v.a_tank_temp||'')+' / '+(v.b_tank_temp||'')+' °F'],['RPM / Flow',(v.pump_rpm||'')+' RPM · '+(v.flow_lpm||'')+' L/min · '+(v.flow_gpm||'')+' GPM']].forEach(r=>kv(r[0],r[1]));
- sectionTitle('MATERIAL TRACEABILITY');
- [['A-Side Batch / Lot',v.a_batch_lot],['A-Side Keg ID',v.a_keg_id],['B-Side Batch / Lot',v.b_batch_lot],['B-Side Keg ID',v.b_keg_id]].forEach(r=>kv(r[0],r[1]));
- sectionTitle('PRODUCTION');
- [['Expected / Installed / Waste BF',(v.expected||'')+' / '+(v.installed||'')+' / '+(v.waste||'')],['Yield / Waste %',(v.yield||'')+' / '+(v.wastepct||'')],['Waste Reason',v.waste_reason],['Disposition',v.disposition]].forEach(r=>kv(r[0],r[1]));
- sectionTitle('DENSITY TESTING');
- for(let i=1;i<=3;i++)kv('Sample '+i,`${v['w'+i]} g · ${v['s'+i]}→${v['f'+i]} mL · ${v['d'+i]} lb/ft³ · ${document.getElementById('r'+i).textContent}`);
- kv('Average / Result',(v.avg||'')+' lb/ft³ · '+overall.textContent);
- const groups=[['p1','Sample 1'],['p2','Sample 2'],['p3','Sample 3'],['waste','Waste'],['before','Before'],['after','After']];
- for(const [id,title] of groups){
-   if(!photos[id].length)continue;
-   doc.addPage();y=16;doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(title+' Photos',12,y);y+=8;doc.setDrawColor(...line);doc.line(12,y,204,y);y+=7;doc.setTextColor(0);
-   for(const src of photos[id]){
-     const p=doc.getImageProperties(src),maxW=192,maxH=220,scale=Math.min(maxW/p.width,maxH/p.height),w=p.width*scale,h=p.height*scale;
-     if(y+h>270){doc.addPage();y=15}
-     doc.addImage(src,'JPEG',(216-w)/2,y,w,h);y+=h+7;
-   }
- }
- doc.addPage();y=16;sectionTitle('OBSERVATIONS');doc.setFont('helvetica','normal');doc.setFontSize(9);y=text(doc,v.observations,14,y,188,5);y+=4;sectionTitle('CORRECTIVE ACTIONS');doc.setFont('helvetica','normal');doc.setFontSize(9);text(doc,v.actions,14,y,188,5);
- const name=`Foam_Solutions_QC_${v.job_number||'report'}.pdf`;const blob=doc.output('blob');const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)
-}
+async function exportPDF(){if(!window.jspdf){alert('PDF library is still loading. Try again in a few seconds.');return}calc();const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'letter'}),v=values();let y=14;const bronze=[138,90,59],dark=[92,56,39],line=[210,190,172];function sectionTitle(t){y=addPageIf(doc,y,12);doc.setFillColor(...bronze);doc.roundedRect(12,y-5,192,8,2,2,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(t,16,y);doc.setTextColor(0);y+=8}function kv(label,value){y=addPageIf(doc,y,9);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text(label,15,y);doc.setFont('helvetica','normal');y=text(doc,value,58,y,143,4);y+=1.5}doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('FOAM SOLUTIONS',12,y);y+=7;doc.setFontSize(13);doc.text('Spray Foam Quality Control Report',12,y);y+=8;doc.setDrawColor(...line);doc.line(12,y,204,y);y+=5;doc.setTextColor(0);sectionTitle('JOB SUMMARY');[['Spray Date',v.spray_date],['Job #',v.job_number],['Customer',v.customer],['Technician',v.technician],['Address',v.address],['Foam System',v.foam],['Target / Roof Pitch',(v.target||'')+' / '+(v.roof_pitch||'')],['Spray Time',(v.start_time||'')+' - '+(v.end_time||'')]].forEach(r=>kv(r[0],r[1]));sectionTitle('CONDITIONS & MACHINE');[['Outside / Attic Temp',(v.outside_temp||'')+' / '+(v.attic_temp||'')+' °F'],['Relative Humidity / Dew Point',(v.rh||'')+'% / '+(v.dew_point||'')+' °F'],['Substrate / Hose Temp',(v.substrate_temp||'')+' / '+(v.hose_temp||'')+' °F'],['A / B Tank Temp',(v.a_tank_temp||'')+' / '+(v.b_tank_temp||'')+' °F'],['RPM / Flow',(v.pump_rpm||'')+' RPM · '+(v.flow_lpm||'')+' L/min · '+(v.flow_gpm||'')+' GPM']].forEach(r=>kv(r[0],r[1]));sectionTitle('MATERIAL TRACEABILITY');[['Drum A',v.drum_a],['Drum B',v.drum_b],['Keg A',v.keg_a],['Keg B',v.keg_b]].forEach(r=>kv(r[0],r[1]));sectionTitle('PRODUCTION');[['Expected / Installed / Waste BF',(v.expected||'')+' / '+(v.installed||'')+' / '+(v.waste||'')],['Yield / Waste %',(v.yield||'')+' / '+(v.wastepct||'')],['Waste Reason',v.waste_reason],['Disposition',v.disposition]].forEach(r=>kv(r[0],r[1]));sectionTitle('DENSITY TESTING');for(let i=1;i<=3;i++)kv('Sample '+i,`${v['w'+i]} g · ${v['s'+i]}→${v['f'+i]} mL · ${v['d'+i]} lb/ft³ · ${document.getElementById('r'+i).textContent}`);kv('Average / Result',(v.avg||'')+' lb/ft³ · '+overall.textContent);const groups=[['p1','Sample 1'],['p2','Sample 2'],['p3','Sample 3'],['waste','Waste'],['before','Before'],['after','After']];for(const [id,title] of groups){if(!photos[id].length)continue;doc.addPage();y=16;doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(title+' Photos',12,y);y+=8;doc.setDrawColor(...line);doc.line(12,y,204,y);y+=7;doc.setTextColor(0);for(const src of photos[id]){const p=doc.getImageProperties(src),maxW=192,maxH=220,scale=Math.min(maxW/p.width,maxH/p.height),w=p.width*scale,h=p.height*scale;if(y+h>270){doc.addPage();y=15}doc.addImage(src,'JPEG',(216-w)/2,y,w,h);y+=h+7}}doc.addPage();y=16;sectionTitle('OBSERVATIONS');doc.setFont('helvetica','normal');doc.setFontSize(9);y=text(doc,v.observations,14,y,188,5);y+=4;sectionTitle('CORRECTIVE ACTIONS');doc.setFont('helvetica','normal');doc.setFontSize(9);text(doc,v.actions,14,y,188,5);const name=`Foam_Solutions_QC_${v.job_number||'report'}.pdf`;const blob=doc.output('blob');const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
 window.addEventListener('load',()=>{let raw=localStorage.getItem('foam_form_text');if(raw){try{let d=JSON.parse(raw);document.querySelectorAll('#f input:not([type=file]),#f textarea').forEach(x=>{let k=x.name||x.id;if(d[k]!==undefined){if(x.type==='checkbox')x.checked=!!d[k];else x.value=d[k]}})}catch(e){}}calc()});
 </script>
 </body></html>
