@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Foam Solutions Estimate Worksheet</title>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--bronze:#8a5a3b;--dark:#513323;--cream:#f7f2ed;--line:#d9c7b7;--ink:#24211f;--muted:#6f675f;--red:#a3261d;--green:#24773b;--shadow:0 3px 16px #3d25150f}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f0ece8;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}main{max-width:1100px;margin:auto;padding:12px 12px 90px}
+header,section{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}header{position:sticky;top:0;z-index:20;border:1px solid #eadfd6}.brand{font-size:21px;font-weight:950;letter-spacing:.04em;color:var(--bronze)}h1{margin:4px 0 2px;color:var(--dark);font-size:clamp(25px,5vw,38px)}.subtitle{margin:0 0 12px;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1 1 150px}button{border:0;border-radius:11px;padding:12px 15px;background:var(--bronze);color:#fff;font-weight:850;font-size:16px;cursor:pointer}button.alt{background:#fff;color:var(--dark);border:2px solid var(--bronze)}button.red{background:var(--red)}button.green{background:var(--green)}button.small{padding:8px 10px;font-size:13px}button:active{transform:translateY(1px)}
+.title{background:var(--bronze);color:#fff;border-radius:10px;padding:9px 12px;font-weight:900;font-size:18px;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+label{display:block;font-weight:800;margin-bottom:5px;font-size:14px}input,select,textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}input[readonly]{background:var(--cream);font-weight:850}textarea{min-height:88px;resize:vertical}.hint{font-size:12px;color:var(--muted);margin-top:5px}.span2{grid-column:span 2}.status{display:none;padding:10px;border-radius:10px;background:#fff7e8;color:#6a451d;margin-bottom:12px;font-weight:700}
+.area-card{border:1px solid var(--line);border-radius:13px;padding:12px;margin:10px 0;background:#fff}.area-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.area-head h3{margin:0;color:var(--dark)}.money{font-variant-numeric:tabular-nums}.summary{background:var(--cream);border:2px solid var(--line)}.summary-row{display:flex;justify-content:space-between;gap:15px;padding:7px 0;border-bottom:1px solid #ddcec1}.summary-row:last-child{border-bottom:0}.summary-row.total{font-size:22px;font-weight:950;color:var(--dark)}
+.photo-box{border:2px dashed var(--bronze);border-radius:13px;padding:12px;background:var(--cream)}.photo-box h3{margin:0 0 7px;color:var(--dark)}.file-label{display:block;text-align:center;border-radius:10px;padding:12px;background:var(--bronze);color:#fff;font-weight:900;cursor:pointer}.file-label input{display:none}.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.tile{position:relative;background:#171717;border-radius:10px;overflow:hidden;min-height:150px}.tile img{width:100%;height:260px;object-fit:contain;display:block}.tile button{position:absolute;right:6px;top:6px;padding:7px 9px;font-size:12px;background:var(--red)}.tile input{border-radius:0;border:0;border-top:1px solid #444;font-size:13px;padding:8px}
+.checkline{display:flex;gap:9px;align-items:flex-start;margin:8px 0}.checkline input{width:22px;height:22px;flex:none}.disclaimer{font-size:12px;line-height:1.45;color:var(--muted)}
+@media(max-width:780px){.grid,.grid3,.grid4{grid-template-columns:1fr}.span2{grid-column:auto}.gallery{grid-template-columns:1fr}.tile img{height:auto;max-height:520px}header{position:static}.actions button{flex:1 1 46%}}
+@media print{body{background:#fff}header{position:static}button,.file-label{display:none!important}header,section{box-shadow:none;border:1px solid #ccc}.photo-box{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="brand">FS · FOAM SOLUTIONS</div>
+  <h1>Spray Foam Estimate Worksheet</h1>
+  <p class="subtitle">Build a job estimate, attach site photos, and export a customer-ready PDF.</p>
+  <div class="actions">
+    <button type="button" onclick="saveEstimate()">Save Draft</button>
+    <button type="button" class="alt" onclick="exportPDF()">Generate PDF</button>
+    <button type="button" class="green" onclick="addArea()">Add Area</button>
+    <button type="button" class="red" onclick="clearEstimate()">Clear</button>
+  </div>
+</header>
+<div id="status" class="status"></div>
+<form id="estimateForm">
+<section>
+  <div class="title">1. Customer & Job Information</div>
+  <div class="grid3">
+    <div><label>Estimate #</label><input name="estimate_number" id="estimate_number"></div>
+    <div><label>Estimate Date</label><input name="estimate_date" id="estimate_date" type="date"></div>
+    <div><label>Valid Through</label><input name="valid_through" id="valid_through" type="date"></div>
+    <div><label>Customer Name</label><input name="customer_name" placeholder="Customer or company"></div>
+    <div><label>Phone</label><input name="phone" type="tel" placeholder="(231) 555-0123"></div>
+    <div><label>Email</label><input name="email" type="email" placeholder="customer@example.com"></div>
+    <div class="span2"><label>Job Address</label><input name="job_address" placeholder="Street, city, state, ZIP"></div>
+    <div><label>Estimator</label><input name="estimator" value="Kenny"></div>
+  </div>
+  <div style="margin-top:10px"><label>Project Description</label><textarea name="project_description" placeholder="Example: Insulate detached garage walls and roof deck with closed-cell spray foam."></textarea></div>
+</section>
+
+<section>
+  <div class="title">2. Estimate Settings</div>
+  <div class="grid4">
+    <div><label>Closed-Cell Rate ($/board foot)</label><input id="cc_rate" name="cc_rate" type="number" min="0" step="0.01" value="2.00" oninput="calculateAll()"></div>
+    <div><label>Open-Cell Rate ($/board foot)</label><input id="oc_rate" name="oc_rate" type="number" min="0" step="0.01" value="1.00" oninput="calculateAll()"></div>
+    <div><label>Waste / Overspray (%)</label><input id="waste_pct" name="waste_pct" type="number" min="0" step="1" value="10" oninput="calculateAll()"></div>
+    <div><label>Sales Tax (%)</label><input id="tax_pct" name="tax_pct" type="number" min="0" step="0.01" value="0" oninput="calculateAll()"></div>
+    <div><label>Mobilization / Setup ($)</label><input id="mobilization" name="mobilization" type="number" min="0" step="1" value="0" oninput="calculateAll()"></div>
+    <div><label>Masking / Protection ($)</label><input id="masking" name="masking" type="number" min="0" step="1" value="0" oninput="calculateAll()"></div>
+    <div><label>Other Charges ($)</label><input id="other_charges" name="other_charges" type="number" min="0" step="1" value="0" oninput="calculateAll()"></div>
+    <div><label>Discount ($)</label><input id="discount" name="discount" type="number" min="0" step="1" value="0" oninput="calculateAll()"></div>
+  </div>
+  <p class="hint">Board feet = square feet × thickness in inches. Waste is added to calculated foam quantity before pricing.</p>
+</section>
+
+<section>
+  <div class="title">3. Foam Areas</div>
+  <div id="areas"></div>
+  <button type="button" class="green" onclick="addArea()">+ Add Another Area</button>
+</section>
+
+<section class="summary">
+  <div class="title">4. Estimate Summary</div>
+  <div class="grid">
+    <div>
+      <div class="summary-row"><span>Closed-cell board feet</span><strong id="cc_bf_total">0</strong></div>
+      <div class="summary-row"><span>Open-cell board feet</span><strong id="oc_bf_total">0</strong></div>
+      <div class="summary-row"><span>Total foam board feet</span><strong id="bf_total">0</strong></div>
+    </div>
+    <div>
+      <div class="summary-row"><span>Foam subtotal</span><strong class="money" id="foam_subtotal">$0.00</strong></div>
+      <div class="summary-row"><span>Additional charges</span><strong class="money" id="additions_total">$0.00</strong></div>
+      <div class="summary-row"><span>Discount</span><strong class="money" id="discount_total">-$0.00</strong></div>
+      <div class="summary-row"><span>Tax</span><strong class="money" id="tax_total">$0.00</strong></div>
+      <div class="summary-row total"><span>Estimated Total</span><strong class="money" id="grand_total">$0.00</strong></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="title">5. Site Photos</div>
+  <div class="grid" id="photoSections"></div>
+  <div style="margin-top:10px"><label>Photo / Site Notes</label><textarea name="photo_notes" placeholder="Access limitations, substrate condition, moisture, stored contents, ventilation, electrical hazards, etc."></textarea></div>
+</section>
+
+<section>
+  <div class="title">6. Scope, Options & Exclusions</div>
+  <div class="grid">
+    <div><label>Included Work</label><textarea name="included_work" placeholder="Masking, foam installation, trimming, cleanup, etc."></textarea></div>
+    <div><label>Excluded Work</label><textarea name="excluded_work" placeholder="Drywall removal, electrical work, fire coating, disposal, repairs, etc."></textarea></div>
+    <div><label>Alternative / Upgrade Option</label><textarea name="alternate_option" placeholder="Optional hybrid assembly, added thickness, ignition barrier, etc."></textarea></div>
+    <div><label>Special Conditions</label><textarea name="special_conditions" placeholder="Minimum temperature, clear access, power availability, change-order conditions, etc."></textarea></div>
+  </div>
+</section>
+
+<section>
+  <div class="title">7. Schedule & Acceptance</div>
+  <div class="grid3">
+    <div><label>Estimated Crew Time</label><input name="crew_time" placeholder="Example: 1 day"></div>
+    <div><label>Proposed Start</label><input name="proposed_start" type="date"></div>
+    <div><label>Deposit Required ($)</label><input name="deposit" type="number" min="0" step="1" value="0"></div>
+  </div>
+  <div class="checkline"><input type="checkbox" name="access_confirmed"><span>Customer will provide clear access to all quoted surfaces before arrival.</span></div>
+  <div class="checkline"><input type="checkbox" name="power_confirmed"><span>Required electrical power and safe work access will be available.</span></div>
+  <div class="grid" style="margin-top:12px">
+    <div><label>Customer Acceptance / Name</label><input name="customer_acceptance"></div>
+    <div><label>Acceptance Date</label><input name="acceptance_date" type="date"></div>
+  </div>
+  <p class="disclaimer">This worksheet is an estimate based on visible conditions and supplied measurements. Final quantities and price may change if concealed conditions, access issues, substrate problems, or requested scope changes are discovered. Applicable code, ignition-barrier, thermal-barrier, ventilation, and occupancy requirements must be confirmed for the specific project.</p>
+</section>
+</form>
+</main>
+<script>
+const $=id=>document.getElementById(id), currency=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+let areaCounter=0;
+const photos={overview:[],details:[]};
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function plusDays(dateStr,days){const d=new Date(dateStr+'T12:00:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+function showStatus(msg){const s=$('status');s.textContent=msg;s.style.display='block';clearTimeout(showStatus.t);showStatus.t=setTimeout(()=>s.style.display='none',3500)}
+function areaTemplate(i,data={}){return `<div class="area-card" data-area="${i}">
+<div class="area-head"><h3>Area ${i}</h3><button type="button" class="red small" onclick="removeArea(${i})">Remove</button></div>
+<div class="grid4">
+<div><label>Area / Assembly</label><input class="area-name" value="${escapeHtml(data.name||'')}" placeholder="Walls, roof deck, rim joist"></div>
+<div><label>Foam Type</label><select class="foam-type" onchange="calculateAll()"><option value="cc" ${data.type==='cc'?'selected':''}>Closed Cell</option><option value="oc" ${data.type==='oc'?'selected':''}>Open Cell</option></select></div>
+<div><label>Length (ft)</label><input class="length" type="number" min="0" step="0.1" value="${data.length??''}" oninput="calculateAll()"></div>
+<div><label>Height / Width (ft)</label><input class="height" type="number" min="0" step="0.1" value="${data.height??''}" oninput="calculateAll()"></div>
+<div><label>Quantity / Similar Areas</label><input class="qty" type="number" min="0" step="1" value="${data.qty??1}" oninput="calculateAll()"></div>
+<div><label>Subtract Openings (sq ft)</label><input class="openings" type="number" min="0" step="0.1" value="${data.openings??0}" oninput="calculateAll()"></div>
+<div><label>Thickness (in)</label><input class="thickness" type="number" min="0" step="0.25" value="${data.thickness??2}" oninput="calculateAll()"></div>
+<div><label>Override Area (sq ft)</label><input class="override" type="number" min="0" step="0.1" value="${data.override??''}" placeholder="Optional" oninput="calculateAll()"></div>
+<div><label>Net Area (sq ft)</label><input class="net-area" readonly></div>
+<div><label>Board Feet + Waste</label><input class="board-feet" readonly></div>
+<div><label>Rate ($/BF)</label><input class="area-rate" readonly></div>
+<div><label>Area Price</label><input class="area-price" readonly></div>
+</div><div style="margin-top:10px"><label>Area Notes</label><input class="area-notes" value="${escapeHtml(data.notes||'')}" placeholder="Stud spacing, substrate, access, target R-value, etc."></div></div>`}
+function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function addArea(data={}){areaCounter++;$('areas').insertAdjacentHTML('beforeend',areaTemplate(areaCounter,data));calculateAll()}
+function removeArea(i){const el=document.querySelector(`[data-area="${i}"]`);if(el)el.remove();calculateAll()}
+function num(el){return Number(el?.value)||0}
+function calculateAll(){let cc=0,oc=0,foamSubtotal=0;const waste=1+num($('waste_pct'))/100;document.querySelectorAll('.area-card').forEach(card=>{
+ const override=num(card.querySelector('.override')),base=Math.max(0,num(card.querySelector('.length'))*num(card.querySelector('.height'))*num(card.querySelector('.qty'))-num(card.querySelector('.openings'))),net=override>0?override:base;
+ const bf=net*num(card.querySelector('.thickness'))*waste,type=card.querySelector('.foam-type').value,rate=type==='cc'?num($('cc_rate')):num($('oc_rate')),price=bf*rate;
+ card.querySelector('.net-area').value=net.toFixed(1);card.querySelector('.board-feet').value=bf.toFixed(0);card.querySelector('.area-rate').value=currency(rate);card.querySelector('.area-price').value=currency(price);
+ if(type==='cc')cc+=bf;else oc+=bf;foamSubtotal+=price;
+ });
+ const additions=num($('mobilization'))+num($('masking'))+num($('other_charges')),discount=num($('discount')),preTax=Math.max(0,foamSubtotal+additions-discount),tax=preTax*num($('tax_pct'))/100,total=preTax+tax;
+ $('cc_bf_total').textContent=cc.toFixed(0);$('oc_bf_total').textContent=oc.toFixed(0);$('bf_total').textContent=(cc+oc).toFixed(0);$('foam_subtotal').textContent=currency(foamSubtotal);$('additions_total').textContent=currency(additions);$('discount_total').textContent='-'+currency(discount);$('tax_total').textContent=currency(tax);$('grand_total').textContent=currency(total);
+}
+function photoBox(id,title){return `<div class="photo-box"><h3>${title}</h3><label class="file-label">Add Photos<input type="file" accept="image/*" multiple onchange="loadPhotos(this,'${id}')"></label><div id="${id}Gallery" class="gallery"></div><button type="button" class="red small" style="margin-top:10px" onclick="clearPhotos('${id}')">Remove All Photos</button></div>`}
+async function loadPhotos(input,id){const files=[...input.files];for(const file of files){if(!file.type.startsWith('image/'))continue;const data=await compressImage(file,1500,.78);photos[id].push({data,caption:''});}input.value='';renderPhotos(id);showStatus(`${files.length} photo(s) added.`)}
+function compressImage(file,maxDim,quality){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=e=>{const img=new Image();img.onerror=reject;img.onload=()=>{let w=img.width,h=img.height;if(Math.max(w,h)>maxDim){const r=maxDim/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);resolve(c.toDataURL('image/jpeg',quality))};img.src=e.target.result};reader.readAsDataURL(file)})}
+function renderPhotos(id){const g=$(id+'Gallery');g.innerHTML=photos[id].map((p,i)=>`<div class="tile"><img src="${p.data}" alt="Uploaded estimate photo"><button type="button" onclick="removePhoto('${id}',${i})">Remove</button><input value="${escapeHtml(p.caption)}" placeholder="Photo caption" oninput="photos['${id}'][${i}].caption=this.value"></div>`).join('')}
+function removePhoto(id,i){photos[id].splice(i,1);renderPhotos(id)}function clearPhotos(id){photos[id]=[];renderPhotos(id)}
+function formDataObject(){const fd=new FormData($('estimateForm')),obj={};for(const [k,v] of fd.entries())obj[k]=v;obj.areas=[...document.querySelectorAll('.area-card')].map(c=>({name:c.querySelector('.area-name').value,type:c.querySelector('.foam-type').value,length:c.querySelector('.length').value,height:c.querySelector('.height').value,qty:c.querySelector('.qty').value,openings:c.querySelector('.openings').value,thickness:c.querySelector('.thickness').value,override:c.querySelector('.override').value,notes:c.querySelector('.area-notes').value}));return obj}
+function saveEstimate(){const obj=formDataObject();try{localStorage.setItem('foamSolutionsEstimate',JSON.stringify(obj));showStatus('Estimate saved on this device. Photos remain available until this browser page is cleared.')}catch(e){showStatus('Could not save draft. Browser storage may be full.')}}
+function loadSaved(){try{const raw=localStorage.getItem('foamSolutionsEstimate');if(!raw)return;const obj=JSON.parse(raw);for(const [k,v] of Object.entries(obj)){if(k==='areas')continue;const el=$('estimateForm').elements.namedItem(k);if(el&&el.type!=='checkbox')el.value=v}if(Array.isArray(obj.areas)&&obj.areas.length){$('areas').innerHTML='';areaCounter=0;obj.areas.forEach(addArea)}showStatus('Saved estimate restored.')}catch(e){console.warn(e)}}
+function clearEstimate(){if(!confirm('Clear all estimate fields and photos?'))return;localStorage.removeItem('foamSolutionsEstimate');$('estimateForm').reset();$('areas').innerHTML='';areaCounter=0;photos.overview=[];photos.details=[];renderPhotos('overview');renderPhotos('details');setDefaults();addArea();calculateAll();showStatus('Estimate cleared.')}
+function setDefaults(){const t=todayISO();$('estimate_date').value=t;$('valid_through').value=plusDays(t,30);$('estimate_number').value='EST-'+t.replaceAll('-','')+'-01'}
+function text(v,fallback='—'){return String(v||'').trim()||fallback}
+function splitLines(doc,str,width){return doc.splitTextToSize(text(str,''),width)}
+function ensureSpace(doc,y,needed=30){if(y+needed>275){doc.addPage();return 18}return y}
+async function exportPDF(){calculateAll();showStatus('Building PDF…');const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'letter'});const obj=formDataObject();const bronze=[138,90,59],dark=[81,51,35];let y=16;
+ const header=()=>{doc.setFont('helvetica','bold');doc.setTextColor(...bronze);doc.setFontSize(17);doc.text('FS · FOAM SOLUTIONS',14,y);doc.setTextColor(...dark);doc.setFontSize(22);doc.text('Spray Foam Estimate',14,y+9);doc.setFont('helvetica','normal');doc.setTextColor(80);doc.setFontSize(9);doc.text('(231) 333-4221  ·  Sales@FoamSolutions.org  ·  FoamSolutions.org',14,y+15);doc.setDrawColor(...bronze);doc.line(14,y+19,202,y+19);y+=25};header();
+ doc.setFontSize(10);doc.setTextColor(30);doc.setFont('helvetica','bold');doc.text(`Estimate: ${text(obj.estimate_number)}`,14,y);doc.text(`Date: ${text(obj.estimate_date)}`,140,y);y+=6;doc.setFont('helvetica','normal');doc.text(`Customer: ${text(obj.customer_name)}`,14,y);doc.text(`Valid through: ${text(obj.valid_through)}`,140,y);y+=6;doc.text(`Phone: ${text(obj.phone)}`,14,y);doc.text(`Email: ${text(obj.email)}`,85,y);y+=6;doc.text(`Job address: ${text(obj.job_address)}`,14,y);y+=7;
+ if(obj.project_description){doc.setFont('helvetica','bold');doc.text('Project:',14,y);doc.setFont('helvetica','normal');const lines=splitLines(doc,obj.project_description,170);doc.text(lines,32,y);y+=lines.length*4.5+3}
+ const rows=[...document.querySelectorAll('.area-card')].map(c=>[text(c.querySelector('.area-name').value),c.querySelector('.foam-type').value==='cc'?'Closed Cell':'Open Cell',c.querySelector('.net-area').value,c.querySelector('.thickness').value,c.querySelector('.board-feet').value,c.querySelector('.area-rate').value,c.querySelector('.area-price').value]);
+ doc.autoTable({startY:y,head:[['Area','Foam','Sq Ft','Inches','Board Ft','Rate','Price']],body:rows,theme:'grid',styles:{fontSize:8,cellPadding:2},headStyles:{fillColor:bronze},columnStyles:{0:{cellWidth:46},1:{cellWidth:25},2:{halign:'right'},3:{halign:'right'},4:{halign:'right'},5:{halign:'right'},6:{halign:'right'}}});y=doc.lastAutoTable.finalY+6;
+ doc.autoTable({startY:y,body:[['Closed-cell board feet',$('cc_bf_total').textContent],['Open-cell board feet',$('oc_bf_total').textContent],['Foam subtotal',$('foam_subtotal').textContent],['Additional charges',$('additions_total').textContent],['Discount',$('discount_total').textContent],['Tax',$('tax_total').textContent],['ESTIMATED TOTAL',$('grand_total').textContent]],theme:'plain',margin:{left:105},styles:{fontSize:10,cellPadding:1.7},columnStyles:{0:{fontStyle:'bold'},1:{halign:'right',fontStyle:'bold'}},didParseCell:d=>{if(d.row.index===6){d.cell.styles.fontSize=13;d.cell.styles.textColor=dark}}});y=doc.lastAutoTable.finalY+8;
+ const blocks=[['Included Work',obj.included_work],['Excluded Work',obj.excluded_work],['Alternative / Upgrade',obj.alternate_option],['Special Conditions',obj.special_conditions]];for(const [title,body] of blocks){if(!body)continue;y=ensureSpace(doc,y,20);doc.setFont('helvetica','bold');doc.setTextColor(...dark);doc.text(title,14,y);y+=5;doc.setFont('helvetica','normal');doc.setTextColor(35);const lines=splitLines(doc,body,184);doc.text(lines,14,y);y+=lines.length*4.2+5}
+ y=ensureSpace(doc,y,28);doc.setFont('helvetica','bold');doc.setTextColor(...dark);doc.text('Schedule & Acceptance',14,y);y+=6;doc.setFont('helvetica','normal');doc.setTextColor(35);doc.text(`Estimated crew time: ${text(obj.crew_time)}    Proposed start: ${text(obj.proposed_start)}    Deposit: ${currency(obj.deposit)}`,14,y);y+=10;doc.line(14,y,90,y);doc.line(112,y,202,y);doc.setFontSize(8);doc.text('Customer acceptance / signature',14,y+4);doc.text('Date',112,y+4);y+=12;
+ doc.setFontSize(7.5);doc.setTextColor(95);const disclaimer='This estimate is based on visible conditions and supplied measurements. Final quantities and price may change if concealed conditions, access issues, substrate problems, or requested scope changes are discovered. Code, ignition-barrier, thermal-barrier, ventilation, and occupancy requirements must be confirmed for the project.';doc.text(doc.splitTextToSize(disclaimer,188),14,y);
+ const allPhotos=[...photos.overview.map(p=>({...p,group:'Site Overview'})),...photos.details.map(p=>({...p,group:'Details / Measurements'}))];if(allPhotos.length){for(let i=0;i<allPhotos.length;i++){const p=allPhotos[i];doc.addPage();doc.setFont('helvetica','bold');doc.setTextColor(...dark);doc.setFontSize(16);doc.text(`${p.group} — Photo ${i+1}`,14,16);const props=doc.getImageProperties(p.data),maxW=184,maxH=225,ratio=Math.min(maxW/props.width,maxH/props.height),w=props.width*ratio,h=props.height*ratio;doc.addImage(p.data,'JPEG',14,23,w,h);if(p.caption){doc.setFont('helvetica','normal');doc.setTextColor(50);doc.setFontSize(10);doc.text(doc.splitTextToSize(p.caption,184),14,Math.min(270,27+h))}}}
+ const pages=doc.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(120);doc.text(`Foam Solutions Estimate · Page ${i} of ${pages}`,14,286)}
+ const safe=(obj.customer_name||'Customer').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');doc.save(`${obj.estimate_number||'Estimate'}-${safe}.pdf`);showStatus('PDF generated.')}
+$('photoSections').innerHTML=photoBox('overview','Site Overview')+photoBox('details','Details & Measurements');setDefaults();addArea({name:'Walls',type:'cc',qty:1,openings:0,thickness:2});loadSaved();calculateAll();
+</script>
+</body>
+</html>
