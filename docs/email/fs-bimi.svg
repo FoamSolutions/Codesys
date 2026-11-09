@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 512 512">
+  <title>Foam Solutions FS</title>
+  <rect width="512" height="512" fill="#1b120e"/>
+  <circle cx="256" cy="256" r="211" fill="#b86f2c" stroke="#f3c27c" stroke-width="12"/>
+  <circle cx="256" cy="256" r="177" fill="#1b120e" stroke="#f3c27c" stroke-width="7"/>
+  <text x="256" y="318" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="190" font-weight="700" letter-spacing="-18" fill="#f6d39b">FS</text>
+  <path d="M108 120h296M108 392h296" fill="none" stroke="#b86f2c" stroke-width="8" opacity=".9"/>
+</svg>
